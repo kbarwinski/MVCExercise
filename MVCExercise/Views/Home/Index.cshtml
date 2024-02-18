@@ -1,0 +1,56 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<table>
+    <thead>
+        <tr>
+            <th>First name</th>
+            <th>Last name</th>
+            <th>Description</th>
+            <th>First email</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var person in Model.People)
+        {
+            <tr>
+                <td>@person.FirstName</td>
+                <td>@person.LastName</td>
+                <td>@person.Description</td>
+                <td>@person.FirstEmailAddress</td>
+                <td>
+                    <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Edit" asp-route-id="@person.Id">Edit</a>
+                    <a href="javascript:void(0)" class="nav-link text-dark delete-link" data-id="@person.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="pagination">
+    @for (int i = 0; i <= (Model.Pagination.TotalCount - 1) / 10; i++)
+    {
+        <a asp-action="Index"
+           asp-route-pageNumber="@i"
+           asp-route-pageSize="10"
+           asp-route-sortingOrders="">@(i + 1)</a>
+    }
+</div>
+
+<script>
+    document.querySelectorAll('.delete-link').forEach(link => {
+        link.addEventListener('click', function (e) {
+            e.preventDefault();
+            var personId = this.getAttribute('data-id');
+            fetch('/Home/Delete?id=' + personId, {
+                method: 'DELETE'
+            }).then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                }
+            }).catch(error => console.error('Error:', error));
+        });
+    });
+</script>
